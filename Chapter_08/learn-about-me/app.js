@@ -11,7 +11,22 @@ var setUpPassport = require("./setuppassport");
 var routes = require("./routes");
 
 var app = express();
-mongoose.connect("mongodb://localhost:27017/test");
+
+var nconf = require('nconf');
+const nconf_file = process.env.APP_CONFIG || './default-config.json';
+nconf.file({ file: nconf_file });
+
+console.log("Loading Configuration");
+
+console.log(nconf.get('mongo'));
+var dbConnectionString = 'mongodb://' + nconf.get('mongo')['host'] + ':' + nconf.get('mongo')['port'] + "/learn-about-me'";
+console.log(dbConnectionString);
+
+console.log("Connecting to Database");
+
+var mongoose = require('mongoose');
+mongoose.connect(dbConnectionString, { useMongoClient: true });
+
 setUpPassport();
 
 app.set("port", process.env.PORT || 3000);
